@@ -15,16 +15,16 @@
 %% This is version {*1.0*} {20**/**/**}
 %%
 %% The list of files that compose this work can be found in the README.md file at
-%% https://ctan.org/pkg/<PackageNAME>
+%% https://ctan.org/pkg/tikzfxgraph
 %%
 %%%==============================================================================
 \NeedsTeXFormat{LaTeX2e}[2022/06/01]
 
 \ProvidesExplPackage
-    {<PackageNAME>}
+    {tikzfxgraph}
     {20**/**/**}
     {*1.0*}
-    {<PackageNAME> <PackageDescription>}
+    {tikzfxgraph Plotting functions in a simplified way.}
 
 %%%%%%%
 %%%
@@ -32,13 +32,13 @@
 %%% Idea being: { <pck-name> / pkg info } for each and all.
 %%%
 %%%%%%%
-\keys_define:nn { <PackageNAME> / pkg info}
+\keys_define:nn { tikzfxgraph / pkg info}
   {
-     name        .code:n = {<PackageNAME>} ,
-     prefix      .code:n = {<PackageNAME>} ,
+     name        .code:n = {tikzfxgraph} ,
+     prefix      .code:n = {tikzfxgraph} ,
      date        .code:n = {20**/**/**},
      version     .code:n = {*1.0*} ,
-     description .code:n = {<PackageNAME> <PackageDescription>}
+     description .code:n = {tikzfxgraph Plotting functions in a simplified way.}
   }
 \cs_if_exist:NF \PkgInfo 
   {
