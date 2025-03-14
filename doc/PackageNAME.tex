@@ -1,0 +1,75 @@
+% !TEX program = pdflatex
+% !TEX ext =  --interaction=nonstopmode --enable-etex --enable-write18
+% !BIB program = none
+%%%==============================================================================
+%% Copyright 2025-present by Alceu Frigeri
+%%
+%% This work may be distributed and/or modified under the conditions of
+%%
+%% * The [LaTeX Project Public License](http://www.latex-project.org/lppl.txt),
+%%   version 1.3c (or later), and/or
+%% * The [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.html),
+%%   version 3 (or later)
+%%
+%% This work has the LPPL maintenance status *maintained*.
+%%
+%% The Current Maintainer of this work is Alceu Frigeri
+%%
+%% This is version {*1.0*} {20**/**/**}
+%%
+%% The list of files that compose this work can be found in the README.md file at
+%% https://ctan.org/pkg/<PackageNAME>
+%%
+%%%==============================================================================
+\documentclass[10pt]{article}
+\RequirePackage[verbose,a4paper,marginparwidth=27.5mm,top=2.5cm,bottom=1.5cm,hmargin={40mm,20mm},marginparsep=2.5mm,columnsep=10mm,asymmetric]{geometry}
+\usepackage{codedescribe}
+\RequirePackage[inline]{enumitem}
+\SetEnumitemKey{miditemsep}{parsep=0ex,itemsep=0.4ex}
+
+%%\usepackage[american,siunitx,cuteinductors,smartlabels,arrowmos,EFvoltages,betterproportions]{circuitikz}
+%%\usetikzlibrary{math}
+%%\usepackage{<PackageNAME>}
+
+\RequirePackage[hidelinks,hypertexnames=false]{hyperref}
+
+\begin{document}
+\tstitle{
+  author={Alceu Frigeri\footnote{\tsverb{https://github.com/alceu-frigeri/<PackageNAME>}}},
+  date={\tsdate},
+  title={The <PackageNAME> Package\break ***Something*** \break Version \PkgInfo{<PackageNAME>}{version}}
+  }
+  
+
+\begin{typesetabstract}
+ 
+This package offers 
+\end{typesetabstract}
+
+%\tableofcontents
+
+\section{Introduction}
+
+\begin{codedescribe}{\somecmd,\somecmd}
+\begin{codesyntax}%
+\tsmacro{\somecmd}{}
+\tsmacro{\somecmd}{}
+\end{codesyntax}
+These will affect how
+\end{codedescribe}
+\begin{tsremark}[\color{red}Warning:]
+  The default ...
+\end{tsremark}
+
+
+\begin{codestore}[demoA]
+some code
+\end{codestore}
+
+%\tscode
+%\tsdemo*[emph={draw,none},emph2={path},emph3={name},basicstyle={\scriptsize\ttfamily},numbers=left]{demoA}
+%\tsresult
+
+
+
+\end{document} 
