@@ -1,6 +1,10 @@
+%%%==============================================================================
+% !Mode:: "TeX:EN"
+% Default Compile engines:
 % !TEX program = pdflatex
-% !TEX ext =  --interaction=nonstopmode --enable-etex --enable-write18
-% !BIB program = none
+% !PDFTeXify ext = --interaction=nonstopmode --enable-etex  --enable-write18
+% !PDFLaTeX ext  = --interaction=nonstopmode --enable-etex  --enable-write18
+% !BIB program = biber
 %%%==============================================================================
 %% Copyright 2025-present by Alceu Frigeri
 %%
@@ -15,7 +19,7 @@
 %%
 %% The Current Maintainer of this work is Alceu Frigeri
 %%
-%% This is version {*1.0*} {20**/**/**}
+%% This is version {1.0} {2025/04/19}
 %%
 %% The list of files that compose this work can be found in the README.md file at
 %% https://ctan.org/pkg/tikzfxgraph
@@ -27,9 +31,16 @@
 \RequirePackage[inline]{enumitem}
 \SetEnumitemKey{miditemsep}{parsep=0ex,itemsep=0.4ex}
 
-%%\usepackage[american,siunitx,cuteinductors,smartlabels,arrowmos,EFvoltages,betterproportions]{circuitikz}
-%%\usetikzlibrary{math}
-%%\usepackage{tikzfxgraph}
+\RequirePackage[backend=biber]{biblatex}
+\addbibresource{tikzfxgraph.bib}
+
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{pgfplots.units}
+
+\usepackage{tikzfxgraph}
 
 \RequirePackage[hidelinks,hypertexnames=false]{hyperref}
 
@@ -37,39 +48,436 @@
 \tstitle{
   author={Alceu Frigeri\footnote{\tsverb{https://github.com/alceu-frigeri/tikzfxgraph}}},
   date={\tsdate},
-  title={The tikzfxgraph Package\break ***Something*** \break Version \PkgInfo{tikzfxgraph}{version}}
+  title={The tikzfxgraph Package\break simplified $f_i(x)$ graphics\break Version \PkgInfo{tikzfxgraph}{version}}
   }
-  
+
 
 \begin{typesetabstract}
- 
-This package offers 
+
+
+This package offers a set of streamlined commands to draw algebraic functions, atop of \tsobj[pkg]{pgfplots,gnuplot}. Some auxiliary commands are also defined allowing to create \emph{sets of functions} and \emph{user defined styles}.
 \end{typesetabstract}
 
-%\tableofcontents
+\tableofcontents
 
 \section{Introduction}
 
-\begin{codedescribe}{\somecmd,\somecmd}
-\begin{codesyntax}%
-\tsmacro{\somecmd}{}
-\tsmacro{\somecmd}{}
-\end{codesyntax}
-These will affect how
-\end{codedescribe}
+The \tsobj[pkg]{pgfplots}\cite{PGFPLOTS:1.18} package together with \tsobj[pkg]{gnuplot}\cite{gnuplot:5.4} is extremely flexible, allowing the construction of very intricate graphics, but said flexibility comes at a cost: the sheer number of parameters to be set.
+This package is nothing more than a wrap around \tsobj[pkg]{pgfplots,gnuplot} offering a somewhat simplified interface.
+
+A command (\tsobj{\fxgraphdraw}) and an environment (\tsobj[env]{fxgraph}) are provided for drawing one or more $f_i(x)$ curves, as well some auxiliary commands (\tsobj{\fxsetnew,\fxsetappend}) to define sets of functions and one for user defined styles (\tsobj{\fxsetnewstyle}).
+
+
+\section{Requirements}
+
+One needs to load at least two packages: \tsobj{tikz,pgfplots} (it is advisable to set the \tsobj[pkg]{pgfplots} compatibility to, at least, 1.18 (\tsverb{\pgfplotsset{compat=1.18}}). Like
+\begin{codestore}[demo-pre]
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{pgfplots.units} %this is optional
+\end{codestore}
+\tscode*{demo-pre}
+
+
+Besides that the \tsobj[pkg]{gnuplot} must be installed/present.
+
+\begin{tsremark}
+to be able to call \tsobj[pkg]{gnuplot} you will need to use the \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) option in your \LaTeX\  run. Keep in mind that \tsobj[pkg]{gnuplot} will create a set of files that can be used from one run to another, and, unless you change the domain/functions, \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) can be kept disable otherwise.
+\end{tsremark}
+
 \begin{tsremark}[\color{red}Warning:]
-  The default ...
+As of now, there is a bug on version 6.0.*, under windows, of \tsobj[pkg]{gnuplot}. It will work, but a series of errors messages will be raised (invalid characters) that's due one of the returning files being written in UTF16 instead of UTF8.
+So, for now, use at most version 5.4.*
+\url{https://sourceforge.net/p/gnuplot/bugs/2747/}
 \end{tsremark}
 
 
-\begin{codestore}[demoA]
-some code
+\section{Commands}
+
+\subsection{Defining Functions' sets}\label{function-set}
+
+\begin{codedescribe}{\fxsetnew}
+\begin{codesyntax}%
+\tsmacro{\fxsetnew}{new-fxset}
+\end{codesyntax}
+This defines/create a \tsobj[marg]{fxset} for later reference. A \tsobj[marg]{fxset} is just a ''repository'' of functions descriptions/specifications.
+\end{codedescribe}
+
+\begin{tsremark}
+About dataset's names: It can be almost anything, the name can contain strings normally not allowed in a macro name, like spaces, dots, two-dots and so on, including backslashes, meaning that if someone typesets \tsobj{\XYZ} as a dataset, \tsobj{\XYZ} will be it's name: a backslash isn't an active character anymore and one can't use macros when defining a fxset's name.
+\end{tsremark}
+
+
+\begin{codedescribe}{\fxsetappend}
+\begin{codesyntax}%
+\tsmacro{\fxsetappend}{fxset,keyval-list}
+\end{codesyntax}
+Adds a function description to a given fxset.
+\end{codedescribe}
+
+Valid Keys when describing a function:
+\begin{describelist*}{option}
+\describe{fx}{The function itself. It can be any \tsobj[pkg]{gnuplot} valid expression, in terms of $x$.}
+\describe{id}{(optional) An unique identifier. A set of auxiliary files are created by \tsobj[pkg]{gnuplot} using this as a name suffix. As per the \tsobj[pkg]{pgfplot} manual, they are used to determined if there is the need to re-run \tsobj[pkg]{gnuplot}. }
+\describe{legend}{(optional) The name of the function, to appears as a Legend.}
+\end{describelist*}
+Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific curve will be in red, using a thick line). For example:
+\begin{codestore}[fxset-01]
+\fxsetnew{set-A} %creating a new 'set'
+
+\fxsetappend{set-A}{
+  id=f-A0 ,
+  fx=x^2-x+2 ,
+  thick %this key comes from tikz/pgf
+  }
+\fxsetappend{set-A}{
+  id=f-A1 ,
+  fx=x^2+x+3 ,
+  red %this key comes from tikz/pgf
+  }
 \end{codestore}
+\tscode*[
+  codeprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-01}
 
-%\tscode
-%\tsdemo*[emph={draw,none},emph2={path},emph3={name},basicstyle={\scriptsize\ttfamily},numbers=left]{demoA}
-%\tsresult
+
+\begin{tsremark}
+An error is raised if \tsobj[marg]{fxset} isn't defined.
+\end{tsremark}
+\begin{tsremark}
+Either set a legend for each and every function, or to none of them. Mixing styles (some with a legend, some without, will result in functions being wrongfully labelled).
+\end{tsremark}
 
 
+\subsection{User Defined Styles}\label{style-def}
+
+\begin{codedescribe}{\fxsetnewstyle}
+\begin{codesyntax}%
+\tsmacro{\fxsetnewstyle}{style-name,keyval-list}
+\end{codesyntax}
+Defines a new \tsobj[pkg]{pgfplot} style key. Which can be later used when drawing $f_i(x)$ function graphs (can be used, for instance, to assure all graphs follow the same style).
+\end{codedescribe}
+
+
+Valid Keys when describing a function:
+\begin{describelist*}{option}
+\describe{linear}{Both $x$ and $y$ axis are linear.}
+\describe{loglog}{Both $x$ and $y$ axis are logarithmic.}
+\describe{semilog x}{The $x$ axis is logarithmic, the $y$ is linear.}
+\describe{semilog y}{The $y$ axis is logarithmic, the $x$ is linear.}
+\describe{x ticks}{Describes the minor ticks to be drawn in the $x$ axis. See below.}
+\describe{y ticks}{Describes the minor ticks to be drawn in the $y$ axis. See below.}
+\end{describelist*}
+Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
+
+
+Note that the keys \tsobj[key]{x ticks, y ticks} are themselves defined by a set of keyval values, as follow:
+\begin{describelist*}{option}
+\describe{min}{The minimal value (starting value) of the corresponding axis.}
+\describe{max}{It`s maximum value.}
+\describe{delta}{(optional) the $delta$ to be used between \emph{ticks}. Note that, it depends on the kind of the axis. In case of a linear axis, this is just the delta between ticks. If logarithmic, it is the geometric distantce between ticks.}
+\describe{N}{(optional) Sets de number of ticks to be calculated. If case of a linear axis it will set the linear distance to $({max - min})/{N}$. In case of a logarithmic axis it will set the geometric distance to $(\ln(max) - \ln(min))/{N}$. \tsobj[key]{N} has precedence over \tsobj[key]{delta}.}
+\describe{units}{(optional) The units of the corresponding axis.}
+\end{describelist*}
+
+The following example will define a style ''my style A'', to be used in a ''semilog x'' graph. The $x$ domain will go from $0.001$ up to $100$ with ticks at $0.001 ,\, 0.01 ,\, 0.1 ,\, 1.0 ,\, 10 \,\textrm{and}\,  100$. Conversely, the $y$ domain will go from $-\pi$ up to $+\pi$, with linearly spaced ticks. The ticks will be inside the graph.
+\begin{codestore}[fxset-02]
+\fxsetnewstyle{my style A}{
+  semilog x ,
+  x ticks = {
+    min = 0.001 ,
+    max = 100 ,
+    N = 6 ,
+    units = rad/s ,
+    } ,
+  y ticks = {
+    min = -3.14159265 ,
+    max =  3.14159265 ,
+    N = 8 ,
+    units = rad ,
+    } ,
+      % the following key comes from pgfplot
+  tick align=inside , %this package's default is outside.
+  }
+\end{codestore}
+\tscode*[
+  codeprefix={} ,
+  codeprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-02}
+
+
+\begin{tsremark}
+The  \tsobj[key]{linear,loglog, semilog x, semilog y} keys are only used when setting the ticks (linear or logarithmic). If none is given, it is assumed that both $x$ and $y$ axis are linear.
+\end{tsremark}
+\begin{tsremark}
+If either \tsobj[key,sep=or]{min,max} are missing, no tick list will be generated.
+\end{tsremark}
+
+\begin{tsremark}
+In case of a logarithmic axis, both \tsobj[key]{min,max} must greater than zero, otherwise an error will be raised.
+\end{tsremark}
+
+
+
+\subsection{Drawing a $f_i(x)$ Graph}
+There is a single drawing command \tsobj{\fxgraphdraw} and a companion environment \tsobj[env]{fxgraph}, both share the same interface. The graph will be constructed as follow: \begin{enumerate*}
+                                                           \item An outer \tsobj[env]{tikzpicture} environment
+                                                           \item An inner \tsobj[env]{axis} environment
+                                                           \item The function's graphs themself
+                                                           \item (in case of the \tsobj[env]{fxgraph} environment)  futher \tsobj[pkg]{pgfplot} commands.
+                                                         \end{enumerate*}
+The \tsobj[env]{axis} environment will first be ''styled'' (as per \tsobj[key,sep=or]{linear,loglog,semilog x, semilog y}, see \ref{style-default}) then the \tsobj[key]{ticks}, if defined, will be applied, lastly any further \tsobj[pkg]{pgfplot} key used when calling those commands.
+\begin{tsremark}
+Given the above construct, generic \tsobj[pkg]{pgfplot} keys used will always have a precedence over the default styles, regardless of they order of appearance.
+\end{tsremark}
+
+\begin{codedescribe}{\fxgraphdraw}
+\begin{codesyntax}%
+\tsmacro{\fxgraphdraw}{keyval-list}
+\end{codesyntax}
+Creates a graph, and draw one or more functions/sets of functions as describer by \tsobj[marg]{keval-list} (see below).
+\end{codedescribe}
+
+\begin{codedescribe}[env]{fxgraph}
+\begin{codesyntax}%
+\tsmacro{\begin{fxgraph}}{keyval-list}
+\tsobj[oarg]{further commands}
+\tsmacro{\end{fxgraph}}{}
+\end{codesyntax}
+Same as \tsobj{\fxgraphdraw}, allowing to add further \tsobj[pkg]{pgfplot,tikz} commands.
+\end{codedescribe}
+
+Valid Keys when describing a graph:
+\begin{describelist*}{option}
+\describe{linear}{Both $x$ and $y$ axis are linear.}
+\describe{loglog}{Both $x$ and $y$ axis are logarithmic.}
+\describe{semilog x}{The $x$ axis is logarithmic, the $y$ is linear.}
+\describe{semilog y}{The $y$ axis is logarithmic, the $x$ is linear.}
+
+\describe{x ticks}{Describes the minor ticks to be drawn in the $x$ axis. See below.}
+\describe{y ticks}{Describes the minor ticks to be drawn in the $y$ axis. See below.}
+
+\describe{sans tikzpicture}{Suppress the outer \tsobj[env]{tikpicture} environment.}
+\describe{without tikzpicture}{Suppress the outer \tsobj[env]{tikpicture} environment.}
+
+\describe{function}{Adds a function specification, see \ref{function-set}.}
+\describe{fx set}{A command separated list of \tsobj[key]{fxsets}.}
+\end{describelist*}
+Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
+
+The \tsobj[key]{x ticks,y ticks} are set the same way as in \ref{style-def} (\tsobj[key]{x tick}=\tsobj[marg]{keyval-list}). 
+
+The \tsobj[key]{function} key defines (as in \ref{function-set}) a function to be draw, it can be used multiple times. Note that those functions will be drawn before any \tsobj[key]{fx set}.
+%\fxgraphdraw{semilog x={red},x ticks={min=0.1,max=1000,N=8},y ticks={min=1,max=100,N=10},function={{fX,red,x^2+3}}}
+
+\tsobj[key]{fx set} is a comma separated list of \tsobj[marg]{fxset} (as defined in \ref{function-set}). All functions $f_i(x)$ associated with each \tsobj[marg]{fxset} will be drawn.
+
+Normally, the \tsobj{\fxgraphdraw} command (viz-à-viz \tsobj[env]{fxgraph} environment) will insert an axis environment inside a \tsobj[env]{tizpicture} environment. The \tsobj[key]{sans tikzpicture,without tikzpicture} keys will suppress that external \tsobj[env]{tizpicture} environment.
+
+\section{Style's Default}\label{style-default}
+
+For each kind of graph (linear, loglog, semilog) there is a corresponding predefined style:
+
+\begin{describelist*}{key}
+\describe{linear axis}{This is the ``base'' style. Both axis will be gridded (lines at the corresponding ticks), with an axis line at the bottom (for $x$) and the left (for $y$). Ticks marks will be outside the graph. The legend (if present) will be at the top right of the graph. The $f_i(x)$ curves will be styled according to two lists: \tsobj[key]{fxgraph color list, fxgraph line list} (see below). The graph width is set to 80\% of \tsobj{\textwidth} and it's height to 35\% of \tsobj{\textwidth}.}
+\describe{loglog axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
+\describe{semilog x axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
+\describe{semilog y axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
+\end{describelist*}
+
+Those styles can be modified with \tsobj[code,sep=or]{\pgfplotsset,\pgfkeys} (using \tsobj[key]{.style append} sub-key, for instance. See \cite{TIKZPGF:3.1} and \cite{PGFPLOTS:1.18}). If using the \tsobj{\pgfkeys} remember to switch first to the \tsobj[key]{pgfplots} `family'.
+
+When styling a set of functions, two lists are used (\tsobj[key]{cycle multiindex* list} from \tsobj[pkg]{pgfplots}):
+
+\begin{describelist*}{key}
+\describe{fxgraph color list}{Function's color will cycle through \tsobj[key]{red!80!black,
+    green!80!black,
+    blue!80!black,
+    black,
+    brown!70!black,
+    teal!80!black,
+    orange!80!black,
+    violet!80!black,
+    cyan!80!black,
+    magenta!80!black,
+    yellow!75!black,
+    black!60!white}. }
+\describe{fxgraph line list}{Function's line style will cycle through \tsobj[key]{    solid,
+    solid,
+    solid,
+    dashed,
+    dashed,
+    dashed,
+    dashdotdotted,
+    dashdotdotted,
+    dashdotdotted}.}
+\end{describelist*}
+
+Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]{pgfplots}.
+
+
+
+
+\section{Examples}\label{Examples}
+
+\subsection{Drawing a Bode Diagram}
+%
+\begin{codestore}[fxset-03]
+\fxsetnewstyle{db style}{
+  semilog x ,
+  y ticks = { min = -20 , max =  80 , N = 5 , units = db } ,
+  }
+
+\fxsetnewstyle{phi style}{
+  semilog x ,
+  y ticks = { min = -3.14159265 , max =  3.14159265 , N = 8 , units = rad } ,
+  }
+
+\fxsetnewstyle{freq range A}{
+  semilog x ,
+  x ticks = { min = 0.01 , max =  100000 , N = 7 , units = rad/s } ,
+  }
+%
+%%% This is optional, just defining an auxiliary macro with f(x) core expression
+%%% Note that this is a valid gnuplot's expression (not LaTeX/TeX/...)
+\def\Hs{(x*{0,1}+1)*(x*{0,1}+40000)/((-x^2+0.01*2*400*x*{0,1}+400^2))}
+
+\fxgraphdraw{
+  semilog x ,
+  db style ,
+  freq range A ,
+  function={fx=20*log10(abs(\Hs))}
+  }
+
+\fxgraphdraw{
+  semilog x ,
+  phi style ,
+  freq range A ,
+  function={fx={atan2( imag(\Hs) , real(\Hs) )}}
+  }
+
+\end{codestore}
+\tsdemo*[
+  codeprefix={} ,
+  resultprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-03}
+
+
+\subsection{A Few Curves at Once}
+In the example below note that the \tsobj[key]{fx set} functions are drawn after the 'Dx'. And that defines the legend order. 
+\begin{codestore}[fxset-04]
+\fxsetnew{set-B}
+\fxsetappend{set-B}{id=B0,fx=2*cos(x)+1,legend=B0}
+\fxsetappend{set-B}{id=B1,fx=2*sin(2*x)-1,legend=B1,thick} 
+            %the thick (line) keyword comes from tikz
+\fxsetnew{set-C}
+\fxsetappend{set-C}{id=C0,fx=1.5*cos(x+2)+1,legend=C0}
+\fxsetappend{set-C}{id=C1,fx=2*sin(x-2)-1,legend=C1}
+
+\fxgraphdraw{
+    linear ,
+    y ticks = {min = -3 , max = 3 , N = 6} ,
+    x ticks = {min = 0 , max = 3*3.14159265 , N = 6 , units = rad} ,
+    fx set = {set-B , set-C} ,
+    function = {id=Dx,fx=x-2,legend=Dx} ,
+    xlabel = some radians ,  % from pgfplots
+    ylabel = This y ,        % from pgfplots
+    title = Graph A          % from pgfplots
+}
+
+\fxgraphdraw{
+    linear ,
+    y ticks = {min = -3 , max = 3 , N = 6} ,
+    x ticks = {min = 0 , max = 3*3.14159265 , N = 6  , units = rad} ,
+    fx set = {set-C} ,
+    xlabel = some more , % from pgfplots
+    ylabel = This y ,    % from pgfplots
+    title = Graph B      % from pgfplots
+}
+
+\end{codestore}
+\tsdemo*[
+  codeprefix={} ,
+  resultprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-04}
+
+\newpage
+\subsection{Further Customization}
+There are many ways, for instance, to have side by side graphs. One could use, for example, a \tsobj[env]{tabular} environment. In the following the \tsobj[pkg]{tikz} library \tsobj[pkg]{matrix} will be used, in which case the option \tsobj[key]{sans tikzpicture} is needed. Furthermore, it is needed to customize the width and height of each graph. Note: \tsobj[pkg]{tikz} matrix cannot be nested, and since \tsobj[pkg]{pgfplots} legend are created as a \tsobj[pkg]{tikz} matrix, one can't have a legend in this case.
+
+\begin{codestore}[fxset-05]
+\fxsetnew{set-D}
+\fxsetappend{set-D}{id=B0,fx=2*cos(x)+1}
+\fxsetappend{set-D}{id=B1,fx=2*sin(2*x)-1,thick}
+            %the thick (line) keyword comes from tikz
+\fxsetnew{set-E}
+\fxsetappend{set-E}{id=C0,fx=1.5*cos(x+2)+1}
+\fxsetappend{set-E}{id=C1,fx=2*sin(x-2)-1}
+
+\begin{tikzpicture}
+\matrix{
+\fxgraphdraw{
+    linear ,
+    y ticks = {min = -3 , max = 3 , N = 6} ,
+    x ticks = {min = 0 , max = 3*3.14159265 , N = 6} ,
+    fx set = {set-D} ,
+    function = {id=Fx,fx=x-2} ,
+    sans tikzpicture ,
+    width=0.47\textwidth,   % from pgfplots
+    height=0.30\textwidth , % from pgfplots
+} &
+\fxgraphdraw{
+    linear ,
+    y ticks = {min = -3 , max = 3 , N = 6} ,
+    x ticks = {min = 0 , max = 3*3.14159265 , N = 6} ,
+    fx set = {set-E} ,
+    function = {id=Gx,fx=x-2} ,
+    sans tikzpicture ,
+    width=0.47\textwidth,    % from pgfplots
+    height=0.30\textwidth ,  % from pgfplots
+} \\
+};
+\end{tikzpicture}
+ 
+\end{codestore}
+\tscode*[
+  codeprefix={} ,
+  resultprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-05}
+
+\tsresult*[
+  codeprefix={} ,
+  resultprefix={} ,
+  texcs2={fxsetnew,fxsetappend,fxsetnewstyle,fxgraphdraw,fxgraph} ,
+  emph={id,fx,legend,set} ,
+  emph={linear,loglog,semilog,ticks,function} ,
+  emph3={min,max,N,delta,units} ,
+  ]{fxset-05}
+
+
+
+\printbibliography
 
 \end{document} 

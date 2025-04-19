@@ -1,9 +1,9 @@
 tikzfxgraph
 ==========
 
-Template for LaTeX packages ...
 
 Plotting functions in a simplified way.
+(using pgfplots and gnuplot)
 
 For more details,  see the documentation,
 [tikzfxgraph.pdf](http://mirrors.ctan.org/graphics/pgf/contrib/tikzfxgraph/doc/tikzfxgraph.pdf)
@@ -13,7 +13,7 @@ For more details,  see the documentation,
 ## Requirements
 * a fairly recent LaTeX distribution as recent as 2022/06/01
 (with the new in kernel *\ProcessKeyOptions* and *\NewDocumentCommand*).
-* gnuplots version 5.4 recommended (version 6 works, but generate some character mismatch error messages, due a UTF8/UTF16 mismatch) 
+* gnuplots version 5.4 recommended (version 6 works, but generate some character error messages, due to a UTF8/UTF16 mismatch) 
 
 ## Installation
 The stable version is available at [CTAN](https://ctan.org/pkg/tikzfxgraph).
@@ -73,3 +73,4 @@ The Current Maintainer of this work is Alceu Frigeri
 
 * Version 1.0 (this)
     - Initial setup.
+    - Initial CTAN release.

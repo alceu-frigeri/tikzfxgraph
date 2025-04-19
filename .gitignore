@@ -134,6 +134,7 @@ acs-*.bib
 # gnuplot
 *.gnuplot
 *.table
+*.vrs
 
 # gnuplottex
 *-gnuplottex-*
