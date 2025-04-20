@@ -1,9 +1,10 @@
 %%%==============================================================================
+% WinEdt pragmas
 % !Mode:: "TeX:EN"
 % Default Compile engines:
 % !TEX program = pdflatex
-% !PDFTeXify ext = --interaction=nonstopmode --enable-etex  --enable-write18
-% !PDFLaTeX ext  = --interaction=nonstopmode --enable-etex  --enable-write18
+% !PDFTeXify ext =  --enable-etex  --enable-write18
+% !PDFLaTeX ext  =  --enable-etex  --enable-write18
 % !BIB program = biber
 %%%==============================================================================
 %% Copyright 2025-present by Alceu Frigeri
@@ -41,6 +42,7 @@
 \usetikzlibrary{pgfplots.units}
 
 \usepackage{tikzfxgraph}
+
 
 \RequirePackage[hidelinks,hypertexnames=false]{hyperref}
 
@@ -275,21 +277,22 @@ Valid Keys when describing a graph:
 \end{describelist*}
 Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
 
-The \tsobj[key]{x ticks,y ticks} are set the same way as in \ref{style-def} (\tsobj[key]{x tick}=\tsobj[marg]{keyval-list}). 
+The \tsobj[key]{x ticks,y ticks} are set the same way as in \ref{style-def} (\tsobj[key]{x tick}=\tsobj[marg]{keyval-list}).
 
 The \tsobj[key]{function} key defines (as in \ref{function-set}) a function to be draw, it can be used multiple times. Note that those functions will be drawn before any \tsobj[key]{fx set}.
 %\fxgraphdraw{semilog x={red},x ticks={min=0.1,max=1000,N=8},y ticks={min=1,max=100,N=10},function={{fX,red,x^2+3}}}
 
 \tsobj[key]{fx set} is a comma separated list of \tsobj[marg]{fxset} (as defined in \ref{function-set}). All functions $f_i(x)$ associated with each \tsobj[marg]{fxset} will be drawn.
 
-Normally, the \tsobj{\fxgraphdraw} command (viz-à-viz \tsobj[env]{fxgraph} environment) will insert an axis environment inside a \tsobj[env]{tizpicture} environment. The \tsobj[key]{sans tikzpicture,without tikzpicture} keys will suppress that external \tsobj[env]{tizpicture} environment.
+Normally, the \tsobj{\fxgraphdraw} command (viz-à-viz \tsobj[env]{fxgraph} environment) will insert an axis environment inside a \tsobj[env]{tizpicture} environment. The \tsobj[key]{sans tikzpicture,without tikzpicture} keys will suppress that external \tsobj[env]{tikzpicture} environment.
 
 \section{Style's Default}\label{style-default}
 
 For each kind of graph (linear, loglog, semilog) there is a corresponding predefined style:
-
+%123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 \begin{describelist*}{key}
-\describe{linear axis}{This is the ``base'' style. Both axis will be gridded (lines at the corresponding ticks), with an axis line at the bottom (for $x$) and the left (for $y$). Ticks marks will be outside the graph. The legend (if present) will be at the top right of the graph. The $f_i(x)$ curves will be styled according to two lists: \tsobj[key]{fxgraph color list, fxgraph line list} (see below). The graph width is set to 80\% of \tsobj{\textwidth} and it's height to 35\% of \tsobj{\textwidth}.}
+\describe{linear axis}{This is the ``base'' style. Both axis will be gridded (lines at the corresponding ticks), with an axis line at the bottom 
+(for $x$) and the left (for $y$). Ticks marks will be outside the graph. The legend (if present) will be at the top right of the graph. The $f_i(x)$ curves will be styled according to two lists: \tsobj[key]{fxgraph color list, fxgraph line list} (see below). The graph width is set to 80\% of \tsobj{\textwidth} and it's height to 35\% of \tsobj{\textwidth}.}
 \describe{loglog axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
 \describe{semilog x axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
 \describe{semilog y axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
@@ -378,11 +381,11 @@ Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]
 
 
 \subsection{A Few Curves at Once}
-In the example below note that the \tsobj[key]{fx set} functions are drawn after the 'Dx'. And that defines the legend order. 
+In the example below note that the \tsobj[key]{fx set} functions are drawn after the 'Dx'. And that defines the legend order.
 \begin{codestore}[fxset-04]
 \fxsetnew{set-B}
 \fxsetappend{set-B}{id=B0,fx=2*cos(x)+1,legend=B0}
-\fxsetappend{set-B}{id=B1,fx=2*sin(2*x)-1,legend=B1,thick} 
+\fxsetappend{set-B}{id=B1,fx=2*sin(2*x)-1,legend=B1,thick}
             %the thick (line) keyword comes from tikz
 \fxsetnew{set-C}
 \fxsetappend{set-C}{id=C0,fx=1.5*cos(x+2)+1,legend=C0}
@@ -456,7 +459,7 @@ There are many ways, for instance, to have side by side graphs. One could use, f
 } \\
 };
 \end{tikzpicture}
- 
+
 \end{codestore}
 \tscode*[
   codeprefix={} ,
