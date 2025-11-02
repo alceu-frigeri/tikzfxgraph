@@ -28,7 +28,9 @@
 \keys_define:nn {my module / mod A}
   {  
     A key .usage:n = general ,
-    A key .code:n = {A~ key:#1:~} ,
+    A key .code:n = {(A~ key:#1:)~} ,   
+    unknown .code:n = 
+      { (unknown~ mod~ A:\l_keys_key_str\ ~with:~ \l_keys_value_tl\ ~ path:~ \l_keys_path_str) } ,
   }
 
 \keys_define:nn {} 
@@ -40,7 +42,9 @@
 \keys_define:nn {my module / mod B}
   {  
     B key .usage:n = general ,
-    B key .code:n = {B~ key:#1:~} ,
+    B key .code:n = {(B~ key:#1:)~} ,
+%    unknown .code:n = 
+%      { (unknown~ mod~ B:\l_keys_key_str\ ~with:~ \l_keys_value_tl\ ~ path:~ \l_keys_path_str) } ,
   }
   
 \keys_define:nn {} 
@@ -52,32 +56,60 @@
 \keys_define:nn {my module / mod C}
   {  
     C key .usage:n = general ,
-    C key .code:n = {C~ key:#1:~} ,
+    C key .code:n = {(C~ key:#1:)~} ,
+%    unknown .code:n = 
+%      { (unknown~ mod~ C:\l_keys_key_str\ ~with:~ \l_keys_value_tl\ ~ path:~ \l_keys_path_str) } ,
   }
   
+\keys_define:nn {} 
+  {
+    my module / mod D .inherit:n = 
+      { my module / mod C }
+  }
+
+\keys_define:nn {my module / mod D}
+  {  
+    D key .usage:n = general ,
+    D key .code:n = {(D~ key:#1:)~} ,
+%    unknown .code:n = 
+%      { (unknown~ mod~ D:\l_keys_key_str\ ~with:~ \l_keys_value_tl\ ~ path:~ \l_keys_path_str) } ,
+  }
   
-\tl_new:N \l__test_keypre_i_tl  
-\keys_precompile:nnN {my module / mod B} {A key=X , B key=Y } \l__test_keypre_i_tl  
 
-pre~ test~i:~ \l__test_keypre_i_tl \par
-  
-\tl_show:N   \l__test_keypre_i_tl
-
-\tl_new:N \l__test_keypre_ii_tl  
-\keys_precompile:nnN {my module / mod B} {A key=Y } \l__test_keypre_ii_tl  
-
-pre~ test~ii:~ \l__test_keypre_ii_tl \par
-
-\tl_show:N   \l__test_keypre_ii_tl
-
+X~ of~ A:  
+\keys_set:nn { my module / mod A}  {X key=X}\par
 A~ of~ A:  
-\keys_set:nn { my module / mod A}  {A key}\par
-
+\keys_set:nn { my module / mod A}  {A key=X}\par
 A~ of~ B:  
-\keys_set:nn { my module / mod B}  {A key}\par
+\keys_set:nn { my module / mod B}  {A key=Y}\par
+A~ of~ C:  
+\keys_set:nn { my module / mod C}  {A key=Z}\par
+A~ of~ D:  
+\keys_set:nn { my module / mod D}  {A key=W}\par
 
-%A~ of~ C:  
-%\keys_set:nn { my module / mod C}  {A key}\par
+
+B~ of~ B:  
+\keys_set:nn { my module / mod B}  {B key=Y}\par
+%
+%% This gives an error, missing key...
+B~ of~ C:  
+\keys_set:nn { my module / mod C}  {B key=Z}\par
+%
+%% This gives an error, missing key...
+B~ of~ D:  
+\keys_set:nn { my module / mod D}  {B key=W}\par
+
+
+C~ of~ C:  
+\keys_set:nn { my module / mod C}  {C key=Z}\par
+%
+%% This gives an error, missing key...
+C~ of~ D:  
+\keys_set:nn { my module / mod D}  {C key=W}\par
+
+D~ of~ D:  
+\keys_set:nn { my module / mod D}  {D key=W}\par
+
 
 \ExplSyntaxOff
 \end{document} 

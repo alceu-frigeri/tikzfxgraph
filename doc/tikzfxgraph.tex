@@ -20,7 +20,7 @@
 %%
 %% The Current Maintainer of this work is Alceu Frigeri
 %%
-%% This is version {1.0} {2025/04/19}
+%% This is version {1.0a} {2025/11/02}
 %%
 %% The list of files that compose this work can be found in the README.md file at
 %% https://ctan.org/pkg/tikzfxgraph
@@ -28,7 +28,10 @@
 %%%==============================================================================
 \documentclass[10pt]{article}
 \RequirePackage[verbose,a4paper,marginparwidth=27.5mm,top=2.5cm,bottom=1.5cm,hmargin={40mm,20mm},marginparsep=2.5mm,columnsep=10mm,asymmetric]{geometry}
-\usepackage{codedescribe}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[infograb]{codedescribe}
 \RequirePackage[inline]{enumitem}
 \SetEnumitemKey{miditemsep}{parsep=0ex,itemsep=0.4ex}
 
@@ -83,10 +86,10 @@ One needs to load at least two packages: \tsobj{tikz,pgfplots} (it is advisable 
 \tscode*{demo-pre}
 
 
-Besides that the \tsobj[pkg]{gnuplot} must be installed/present.
+Besides that, \tsobj[pkg]{gnuplot} must be installed/present.
 
 \begin{tsremark}
-to be able to call \tsobj[pkg]{gnuplot} you will need to use the \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) option in your \LaTeX\  run. Keep in mind that \tsobj[pkg]{gnuplot} will create a set of files that can be used from one run to another, and, unless you change the domain/functions, \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) can be kept disable otherwise.
+to be able to call \tsobj[pkg]{gnuplot} you will need to use the \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) option in your \LaTeX{}  run. Keep in mind that \tsobj[pkg]{gnuplot} will create a set of files that can be used from one run to another, and, unless you change the domain/functions, \tsobj[key]{--enable-write18} (or \tsobj[key]{--shell-scape}) can be kept disable otherwise.
 \end{tsremark}
 
 \begin{tsremark}[\color{red}Warning:]
@@ -176,6 +179,7 @@ Valid Keys when describing a function:
 \describe{x ticks}{Describes the minor ticks to be drawn in the $x$ axis. See below.}
 \describe{y ticks}{Describes the minor ticks to be drawn in the $y$ axis. See below.}
 \end{describelist*}
+
 Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
 
 
@@ -184,11 +188,11 @@ Note that the keys \tsobj[key]{x ticks, y ticks} are themselves defined by a set
 \describe{min}{The minimal value (starting value) of the corresponding axis.}
 \describe{max}{It`s maximum value.}
 \describe{delta}{(optional) the $delta$ to be used between \emph{ticks}. Note that, it depends on the kind of the axis. In case of a linear axis, this is just the delta between ticks. If logarithmic, it is the geometric distantce between ticks.}
-\describe{N}{(optional) Sets de number of ticks to be calculated. If case of a linear axis it will set the linear distance to $({max - min})/{N}$. In case of a logarithmic axis it will set the geometric distance to $(\ln(max) - \ln(min))/{N}$. \tsobj[key]{N} has precedence over \tsobj[key]{delta}.}
+\describe{N}{(optional) Sets de number of ticks to be calculated. In case of a linear axis it will set the linear distance to $({max - min})/{N}$. In case of a logarithmic axis it will set the geometric distance to $(\ln(max) - \ln(min))/{N}$. \tsobj[key]{N} has precedence over \tsobj[key]{delta}.}
 \describe{units}{(optional) The units of the corresponding axis.}
 \end{describelist*}
 
-The following example will define a style ''my style A'', to be used in a ''semilog x'' graph. The $x$ domain will go from $0.001$ up to $100$ with ticks at $0.001 ,\, 0.01 ,\, 0.1 ,\, 1.0 ,\, 10 \,\textrm{and}\,  100$. Conversely, the $y$ domain will go from $-\pi$ up to $+\pi$, with linearly spaced ticks. The ticks will be inside the graph.
+The following example will define a style ``my style A'', to be used in a ``semilog x'' graph. The $x$ domain will go from $0.001$ up to $100$ with ticks at $0.001 ,\, 0.01 ,\, 0.1 ,\, 1.0 ,\, 10 \,\textrm{and}\,  100$. Conversely, the $y$ domain will go from $-\pi$ up to $+\pi$, with linearly spaced ticks. The ticks will be inside the graph.
 \begin{codestore}[fxset-02]
 \fxsetnewstyle{my style A}{
   semilog x ,
@@ -273,8 +277,9 @@ Valid Keys when describing a graph:
 \describe{without tikzpicture}{Suppress the outer \tsobj[env]{tikpicture} environment.}
 
 \describe{function}{Adds a function specification, see \ref{function-set}.}
-\describe{fx set}{A command separated list of \tsobj[key]{fxsets}.}
+\describe{fx set}{A comma separated list of \tsobj[key]{fxsets}.}
 \end{describelist*}
+
 Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
 
 The \tsobj[key]{x ticks,y ticks} are set the same way as in \ref{style-def} (\tsobj[key]{x tick}=\tsobj[marg]{keyval-list}).
@@ -291,7 +296,7 @@ Normally, the \tsobj{\fxgraphdraw} command (viz-à-viz \tsobj[env]{fxgraph} envi
 For each kind of graph (linear, loglog, semilog) there is a corresponding predefined style:
 %123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 \begin{describelist*}{key}
-\describe{linear axis}{This is the ``base'' style. Both axis will be gridded (lines at the corresponding ticks), with an axis line at the bottom 
+\describe{linear axis}{This is the ``base'' style. Both axis will be gridded (lines at the corresponding ticks), with an axis line at the bottom
 (for $x$) and the left (for $y$). Ticks marks will be outside the graph. The legend (if present) will be at the top right of the graph. The $f_i(x)$ curves will be styled according to two lists: \tsobj[key]{fxgraph color list, fxgraph line list} (see below). The graph width is set to 80\% of \tsobj{\textwidth} and it's height to 35\% of \tsobj{\textwidth}.}
 \describe{loglog axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
 \describe{semilog x axis}{It applies the current \tsobj[key]{linear axis} style and the log basis is set to 10.}
@@ -355,6 +360,7 @@ Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]
 %%% Note that this is a valid gnuplot's expression (not LaTeX/TeX/...)
 \def\Hs{(x*{0,1}+1)*(x*{0,1}+40000)/((-x^2+0.01*2*400*x*{0,1}+400^2))}
 
+~\hfill
 \fxgraphdraw{
   semilog x ,
   db style ,
@@ -362,13 +368,13 @@ Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]
   function={fx=20*log10(abs(\Hs))}
   }
 
+~\hfill
 \fxgraphdraw{
   semilog x ,
   phi style ,
   freq range A ,
   function={fx={atan2( imag(\Hs) , real(\Hs) )}}
   }
-
 \end{codestore}
 \tsdemo*[
   codeprefix={} ,
@@ -381,7 +387,7 @@ Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]
 
 
 \subsection{A Few Curves at Once}
-In the example below note that the \tsobj[key]{fx set} functions are drawn after the 'Dx'. And that defines the legend order.
+In the example below note that the \tsobj[key]{fx set} functions are drawn after the `Dx'. And that defines the legend order.
 \begin{codestore}[fxset-04]
 \fxsetnew{set-B}
 \fxsetappend{set-B}{id=B0,fx=2*cos(x)+1,legend=B0}

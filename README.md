@@ -70,7 +70,10 @@ The Current Maintainer of this work is Alceu Frigeri
 -------------
 
 ## Change log
+* Version 1.0a (this)
+    - switching over pkginfograb package's info
+    - no longer using any kernel scratch variable.
 
-* Version 1.0 (this)
+* Version 1.0
     - Initial setup.
     - Initial CTAN release.
