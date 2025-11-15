@@ -20,7 +20,7 @@
 %%
 %% The Current Maintainer of this work is Alceu Frigeri
 %%
-%% This is version {1.0a} {2025/11/02}
+%% This is version {1.1} {2025/11/15}
 %%
 %% The list of files that compose this work can be found in the README.md file at
 %% https://ctan.org/pkg/tikzfxgraph
@@ -44,7 +44,7 @@
 \pgfplotsset{compat=1.18}
 \usetikzlibrary{pgfplots.units}
 
-\usepackage{tikzfxgraph}
+\usepackage[no domain warning, use file]{tikzfxgraph}
 
 
 \RequirePackage[hidelinks,hypertexnames=false]{hyperref}
@@ -98,6 +98,14 @@ So, for now, use at most version 5.4.*
 \url{https://sourceforge.net/p/gnuplot/bugs/2747/}
 \end{tsremark}
 
+\section{Package Options}
+
+\begin{describelist}{option}\label{pack-options}
+\describe{samples default}{(default: 2000) Globally sets the default number of samples to be calculated. This can be overwritten per function definition (see \ref{function-set}).}
+\describe{no domain warning}{(default: false) Given the many ways by which a function domain can be defined, in some cases this package will issue a warning if the domain wasn't explicitly defined (see \ref{fx-draw}), which might be (or not) an error. This option suppresses those warnings.}
+\describe{use file}{(default: false) This will globally  set \tsobj[key]{use file} for every \tsobj{\fxgraphdraw} or \tsobj[env]{fxgraph} environment. The same conditions (per function) and warnings apply: The corresponding table files must exist but they won't be verified if they are up-to-date. With this global option set, one can selectively reverse it per \tsobj{\fxgraphdraw} or \tsobj[env]{fxgraph} environment, by using \tsobj[option]{use file=false} with them.}
+\end{describelist}
+If each and every function used has a corresponding \emph{distinct} \tsobj[option]{id}, the option \tsobj[option]{use file} can be used to share the \LaTeXe{} document with someone who doesn't have \tsobj[pkg]{gnuplot} installed (or doesn't want to enable \tsobj[key,sep=or]{--enable-write18,--shell-scape}).
 
 \section{Commands}
 
@@ -123,12 +131,21 @@ Adds a function description to a given fxset.
 \end{codedescribe}
 
 Valid Keys when describing a function:
-\begin{describelist*}{option}
+\begin{describelist*}{key}
 \describe{fx}{The function itself. It can be any \tsobj[pkg]{gnuplot} valid expression, in terms of $x$.}
 \describe{id}{(optional) An unique identifier. A set of auxiliary files are created by \tsobj[pkg]{gnuplot} using this as a name suffix. As per the \tsobj[pkg]{pgfplot} manual, they are used to determined if there is the need to re-run \tsobj[pkg]{gnuplot}. }
 \describe{legend}{(optional) The name of the function, to appears as a Legend.}
+\describe{samples}{(default: 2000) The default value can be changed by the package option \tsobj[option]{samples default}) Set the number of points to be calculated.}
+\describe{use file}{(optional) If \tsobj[key]{id} is defined, and the corresponding table file exists (\tsobj{\jobname . <id> . table}), then the table file will be used instead of calling gnuplot. {\color{red}Warning:} It won't check if the table file is correct/up to date! This is, mainly, a work around for some cases in which \tsobj[pkg]{pgf/pgfplot} fails to recognize that `nothing has changed' and needless call  \tsobj[pkg]{gnuplot}. This setting has precedence over the corresponding  global/environment setting.}
 \end{describelist*}
-Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific curve will be in red, using a thick line). For example:
+\begin{tsremark}
+An error is raised if \tsobj[marg]{fxset} isn't defined.
+\end{tsremark}
+\begin{tsremark}
+Either set a legend for each and every function, or to none of them. Mixing styles (some with a legend, some without, will result in functions being wrongfully labelled).
+\end{tsremark}
+Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific curve will be in red, using a thick line).
+For example:
 \begin{codestore}[fxset-01]
 \fxsetnew{set-A} %creating a new 'set'
 
@@ -151,13 +168,6 @@ Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red 
   emph3={min,max,N,delta,units} ,
   ]{fxset-01}
 
-
-\begin{tsremark}
-An error is raised if \tsobj[marg]{fxset} isn't defined.
-\end{tsremark}
-\begin{tsremark}
-Either set a legend for each and every function, or to none of them. Mixing styles (some with a legend, some without, will result in functions being wrongfully labelled).
-\end{tsremark}
 
 
 \subsection{User Defined Styles}\label{style-def}
@@ -192,6 +202,7 @@ Note that the keys \tsobj[key]{x ticks, y ticks} are themselves defined by a set
 \describe{units}{(optional) The units of the corresponding axis.}
 \end{describelist*}
 
+
 The following example will define a style ``my style A'', to be used in a ``semilog x'' graph. The $x$ domain will go from $0.001$ up to $100$ with ticks at $0.001 ,\, 0.01 ,\, 0.1 ,\, 1.0 ,\, 10 \,\textrm{and}\,  100$. Conversely, the $y$ domain will go from $-\pi$ up to $+\pi$, with linearly spaced ticks. The ticks will be inside the graph.
 \begin{codestore}[fxset-02]
 \fxsetnewstyle{my style A}{
@@ -221,9 +232,8 @@ The following example will define a style ``my style A'', to be used in a ``semi
   emph3={min,max,N,delta,units} ,
   ]{fxset-02}
 
-
 \begin{tsremark}
-The  \tsobj[key]{linear,loglog, semilog x, semilog y} keys are only used when setting the ticks (linear or logarithmic). If none is given, it is assumed that both $x$ and $y$ axis are linear.
+The  \tsobj[key]{linear,loglog, semilog x, semilog y} keys are only used here for setting the ticks (linear or logarithmic). If none is given, it is assumed that both $x$ and $y$ axis are linear.
 \end{tsremark}
 \begin{tsremark}
 If either \tsobj[key,sep=or]{min,max} are missing, no tick list will be generated.
@@ -235,7 +245,7 @@ In case of a logarithmic axis, both \tsobj[key]{min,max} must greater than zero,
 
 
 
-\subsection{Drawing a $f_i(x)$ Graph}
+\subsection{Drawing a $f_i(x)$ Graph}\label{fx-draw}
 There is a single drawing command \tsobj{\fxgraphdraw} and a companion environment \tsobj[env]{fxgraph}, both share the same interface. The graph will be constructed as follow: \begin{enumerate*}
                                                            \item An outer \tsobj[env]{tikzpicture} environment
                                                            \item An inner \tsobj[env]{axis} environment
@@ -278,6 +288,7 @@ Valid Keys when describing a graph:
 
 \describe{function}{Adds a function specification, see \ref{function-set}.}
 \describe{fx set}{A comma separated list of \tsobj[key]{fxsets}.}
+\describe{use file}{(optional) This is equivalent of setting \tsobj[key]{use file} for every function to be drawn in this group, as in \ref{function-set}, the same conditions and warnings apply: The corresponding table files must exist but they won't be verified if they are up-to-date.}
 \end{describelist*}
 
 Besides those, any other \tsobj[pkg]{pgfplots} valid key can be used. (e.g. red , thick : the specific style will set the lines to be red and thick).
@@ -290,6 +301,13 @@ The \tsobj[key]{function} key defines (as in \ref{function-set}) a function to b
 \tsobj[key]{fx set} is a comma separated list of \tsobj[marg]{fxset} (as defined in \ref{function-set}). All functions $f_i(x)$ associated with each \tsobj[marg]{fxset} will be drawn.
 
 Normally, the \tsobj{\fxgraphdraw} command (viz-à-viz \tsobj[env]{fxgraph} environment) will insert an axis environment inside a \tsobj[env]{tizpicture} environment. The \tsobj[key]{sans tikzpicture,without tikzpicture} keys will suppress that external \tsobj[env]{tikzpicture} environment.
+
+\begin{tsremark}
+  The \tsobj[env]{fxgraph} environment (as well the \tsobj{\fxgraphdraw} command) usually extracts the many function's domain from \tsobj[key]{x ticks}, if present. Though, the domain can be set by other means (e.g. via \tsobj{\fxsetnewstyle} or directly via \tsobj[pkg]{pgfplots} keys), a warning will be raised if \tsobj[key]{x ticks} isn't explicitly set. This warning can be suppressed with the package option: \tsobj[option]{no domain warning}, see \ref{pack-options}.
+\end{tsremark}
+\begin{tsremark}
+  If the package option \tsobj[option]{use file} (see \ref{pack-options}) is set, the local command/environment option \tsobj[option]{use file=false} can be used to locally revert it's effect. Note though, the function definition (see \ref{function-set} has precedence over them).
+\end{tsremark}
 
 \section{Style's Default}\label{style-default}
 
@@ -331,10 +349,10 @@ When styling a set of functions, two lists are used (\tsobj[key]{cycle multiinde
     dashdotdotted}.}
 \end{describelist*}
 
-Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]{pgfplots}.
+Both can be redefined with \tsobj{\pgfplotscreateplotcyclelist} from \tsobj[pkg]{pgfplots}\cite{PGFPLOTS:1.18}.
 
 
-
+\newpage
 
 \section{Examples}\label{Examples}
 
@@ -430,7 +448,7 @@ In the example below note that the \tsobj[key]{fx set} functions are drawn after
 
 \newpage
 \subsection{Further Customization}
-There are many ways, for instance, to have side by side graphs. One could use, for example, a \tsobj[env]{tabular} environment. In the following the \tsobj[pkg]{tikz} library \tsobj[pkg]{matrix} will be used, in which case the option \tsobj[key]{sans tikzpicture} is needed. Furthermore, it is needed to customize the width and height of each graph. Note: \tsobj[pkg]{tikz} matrix cannot be nested, and since \tsobj[pkg]{pgfplots} legend are created as a \tsobj[pkg]{tikz} matrix, one can't have a legend in this case.
+There are many ways, for instance, to have side by side graphs. One could use, for example, a \tsobj[env]{tabular} environment. In the following the \tsobj[pkg]{tikz} library \tsobj[pkg]{matrix} will be used, in which case the option \tsobj[key]{sans tikzpicture} is needed (besides a custom width and height for each graph). Note: Since \tsobj[pkg]{tikz} matrixes cannot be nested, and \tsobj[pkg]{pgfplots} legends are created as a \tsobj[pkg]{tikz} matrix, one can't have a legend in this case.
 
 \begin{codestore}[fxset-05]
 \fxsetnew{set-D}

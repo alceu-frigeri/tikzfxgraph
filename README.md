@@ -62,6 +62,7 @@ The Current Maintainer of this work is Alceu Frigeri
 * README.md  (this file)
     - quick introduction
 
+* tikzfxgraph.bib
 * tikzfxgraph.tex
     - package documentation
 * tikzfxgraph.pdf
@@ -70,7 +71,13 @@ The Current Maintainer of this work is Alceu Frigeri
 -------------
 
 ## Change log
-* Version 1.0a (this)
+* Version 1.1 (this)
+    - new package options:
+      - (to) suppress some warnings, 
+      - (to) change the default number of samples
+      - (to) allow the use of pre-calculated tables instead of calling gnuplot (pgf/pgfplots work around)
+    
+* Version 1.0a
     - switching over pkginfograb package's info
     - no longer using any kernel scratch variable.
 
